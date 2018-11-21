@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="eng">
+<head>
+    <meta charset="UTF-8">
+    <title>Shift Manager</title>
+</head>
+<body>
+    <form action="/accounts/login/" method="post">
+        {% csrf_token %}
+        {if next %}
+        <input type="hidden" name="next" value="{{next}}" />
+        {% endif %}
+        <input type=" />
+
+    </form>
+</body>
+
+</html>
