@@ -4,7 +4,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 class AuthUserManager(BaseUserManager):
-    def create_user(self, username, first_name, last_name, password):
+    def create_user(self, phone, first_name, last_name, password, restaurants):
         """
         Create users
         :param first_name: First name
@@ -14,8 +14,8 @@ class AuthUserManager(BaseUserManager):
         :return: AuthUser object
         """
 
-        if not username:
-            raise ValueError('username is required')
+        if not phone:
+            raise ValueError('phone is required')
 
         if not first_name:
             raise ValueError('First Name is required')
@@ -27,24 +27,27 @@ class AuthUserManager(BaseUserManager):
             raise ValueError('Password is required')
 
 
-        user = self.model(username=username,
+        user = self.model(phone=phone,
                           first_name=first_name,
                           last_name=last_name,
-                          password=password)
+                          password=password,
+                          restaurants=restaurants)
 
         user.is_active =True
-        user.ser_password(password)
+        user.set_password(password)
         user.save(using=self._db)
         return user
 
 
-    def create_superuser(self, first_name, last_name, password):
+    def create_superuser(self, phone, first_name, last_name, password, restaurants):
         """
         create super user
         """
-        user = self.create_user(first_name=first_name,
+        user = self.create_user(phone=phone,
+                          first_name=first_name,
                           last_name=last_name,
-                          password=password)
+                          password=password,
+                          restaurants=restaurants)
         user.is_staff = True
         user.is_superuser = True
         user.save(using=self._db)
@@ -67,17 +70,15 @@ class AuthUser(AbstractBaseUser, PermissionsMixin):
         """
         return self.last_name + self.first_name
 
-    username = models.CharField(verbose_name='username', max_length=30, unique=True)
-
     first_name = models.CharField(verbose_name='first name', max_length=30)
 
     last_name = models.CharField(verbose_name='last name', max_length=30)
 
-    #phone = models.CharField(verbose_name='Phone Number', max_length=15)
+    phone = models.CharField(verbose_name='Phone Number', max_length=15, unique=True)
 
     password = models.CharField(verbose_name='password', max_length=128)
 
-    #restaurant = models.CharField(verbose_name='restaurants', max_length=50)
+    restaurant = models.CharField(verbose_name='restaurants', max_length=50)
 
     date_joined = models.DateTimeField(auto_now_add=True)
 
@@ -100,8 +101,9 @@ class AuthUser(AbstractBaseUser, PermissionsMixin):
         default=True,
     )
 
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['first_name', 'last_name']
+    PHONE_FIELD = 'phone'
+    USERNAME_FIELD = 'phone'
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'restaurant']
 
     objects = AuthUserManager()
 
