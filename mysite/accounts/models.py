@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 class AuthUserManager(BaseUserManager):
-    def create_user(self, phone, first_name, last_name, password, restaurants):
+    def create_user(self, phone, first_name, last_name, password, restaurant):
         """
         Create users
         :param first_name: First name
@@ -29,7 +29,7 @@ class AuthUserManager(BaseUserManager):
                           first_name=first_name,
                           last_name=last_name,
                           password=password,
-                          restaurants=restaurants)
+                          restaurant=restaurant)
 
         user.is_active =True
         user.set_password(password)
@@ -37,7 +37,7 @@ class AuthUserManager(BaseUserManager):
         return user
 
 
-    def create_superuser(self, phone, first_name, last_name, password, restaurants):
+    def create_superuser(self, phone, first_name, last_name, password, restaurant):
         """
         create super user
         """
@@ -45,7 +45,7 @@ class AuthUserManager(BaseUserManager):
                           first_name=first_name,
                           last_name=last_name,
                           password=password,
-                          restaurants=restaurants)
+                          restaurant=restaurant)
         user.is_staff = True
         user.is_superuser = True
         user.save(using=self._db)
@@ -76,7 +76,7 @@ class AuthUser(AbstractBaseUser, PermissionsMixin):
 
     password = models.CharField(verbose_name='password', max_length=128)
 
-    restaurant = models.CharField(verbose_name='restaurants', max_length=50)
+    restaurant = models.CharField(verbose_name='restaurant', max_length=50)
 
     date_joined = models.DateTimeField(auto_now_add=True)
 

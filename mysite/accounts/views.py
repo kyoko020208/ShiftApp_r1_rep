@@ -23,13 +23,13 @@ class SignUpView(View):
             return render(request, 'accounts/signup.html', {'form': form})
 
         #save form info into user database
-        user_info_save = form.save(comit=True)
+        user_info_save = form.save(commit=True)
 
         #login; save the user data and update the database
         auth_login(request, user_info_save)
 
         #redirect to shift index
-        return redirect('shift:index')
+        return redirect('accounts:login')
 
 
 class LoginView(View):
@@ -48,7 +48,7 @@ class LoginView(View):
         login_user = form.get_login_user()
 
         auth_login(request, login_user)
-        return redirect(reverse('shift:index'))
+        return redirect(reverse('accounts:login'))
 
 class LogoutView(LoginRequiredMixin, View):
     """create method for get request"""

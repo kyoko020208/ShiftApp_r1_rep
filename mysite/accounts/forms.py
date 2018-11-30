@@ -4,13 +4,18 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 class SignUpForm(forms.ModelForm):
+    """User Signup Form"""
     class Meta:
+        #Use AuthUser class from model.py
         model = AuthUser
-        fields = ('first_name', 'last_name', 'phone', 'restaurant', 'password')
+        #Prepare the same fields as being made in model.py
+        fields = ('first_name', 'last_name', 'phone', 'restaurant', 'password', )
+        #パスワードform作るときのおまじない
         widgets = {
             'password': forms.PasswordInput(attrs={'placeholder': '*Password'}),
         }
 
+    #Create Password Confirmation form
     confirm_password = forms.CharField(
         label='checking password',
         required=True,
@@ -18,13 +23,17 @@ class SignUpForm(forms.ModelForm):
         widget=forms.PasswordInput(attrs={'placeholder': '*Password'}),
     )
 
+    #Create Input form
     def __init__(self, *args, **kwargs):
         super(SignUpForm, self).__init__(*args, **kwargs)
         self.fields['first_name'].widget.attrs = {'placeholder': '*First name'}
+        self.fields['first_name'].required = True
         self.fields['last_name'].widget.attrs = {'placeholder': '*Last name'}
-        self.fileds['phone'].required = True
+        self.fields['last_name'].required = True
         self.fields['phone'].widget.attrs = {'placeholder': '*Phone'}
-        self.fields['restaurant'].widget.attrs = {'placeholder': '*Restanrants name'}
+        self.fields['phone'].required = True
+        self.fields['restaurant'].widget.attrs = {'placeholder': '*Restaurant name'}
+        self.fields['restaurant'].required = True
 
     def clean_phone(self):
         """validate phone"""
@@ -55,7 +64,7 @@ class SignUpForm(forms.ModelForm):
         user_info.set_password(self.cleaned_data["password"])
         if commit:
             user_info.save()
-            AuthUserManager.objects.create(user=user_info)
+            AuthUser.objects.create(user=user_info)
 
         return user_info
 
@@ -94,11 +103,11 @@ class LoginForm(forms.Form):
 
     def clean(self):
         """validate phone and its password are corresponding"""
-        phone = self.clean_data['phone']
-        password = self.clean_data['password']
+        phone = self.clean_phone()
+        password = self.clean_password()
 
         try:
-            requesting_user = AuthUserManager.objects.get(phone=phone)
+            requesting_user = AuthUser.objects.get(phone=phone)
         except ObjectDoesNotExist:
             raise forms.ValidationError('Input correct phone number')
         if not requesting_user.check_password(password):
