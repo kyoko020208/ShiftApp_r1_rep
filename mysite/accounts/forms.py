@@ -1,13 +1,13 @@
 from django import forms
-from .models import AuthUserManager, AuthUser
+from .models import UserManager
 from django.core.exceptions import ObjectDoesNotExist
 
 
 class SignUpForm(forms.ModelForm):
     """User Signup Form"""
     class Meta:
-        #Use AuthUser class from model.py
-        model = AuthUser
+        #Use UserManager class from model.py
+        model = UserManager
         #Prepare the same fields as being made in model.py
         fields = ('first_name', 'last_name', 'phone', 'restaurant', 'password', )
         #パスワードform作るときのおまじない
@@ -35,6 +35,18 @@ class SignUpForm(forms.ModelForm):
         self.fields['restaurant'].widget.attrs = {'placeholder': '*Restaurant name'}
         self.fields['restaurant'].required = True
 
+    def clean_firstName(self):
+        firstName = self.clean_data['first_name']
+        return firstName
+
+    def clean_lastName(self):
+        lastName = self.clean_data['last_name']
+        return lastName
+
+    def clean_restaurant(self):
+        restaurant = self.clean_data['restanrant']
+        return restaurant
+
     def clean_phone(self):
         """validate phone"""
         phone = self.cleaned_data['phone']
@@ -47,7 +59,7 @@ class SignUpForm(forms.ModelForm):
             raise forms.ValidationError('Phone number must be numbers')
         return phone
 
-    def clean(self):
+    def clean_password(self):
         """validate password and confirm password"""
         super(SignUpForm, self).clean()
         password = self.cleaned_data['password']
@@ -64,7 +76,7 @@ class SignUpForm(forms.ModelForm):
         user_info.set_password(self.cleaned_data["password"])
         if commit:
             user_info.save()
-            AuthUser.objects.create(user=user_info)
+            # UserManager.objects.create(user=user_info)
 
         return user_info
 
@@ -103,11 +115,11 @@ class LoginForm(forms.Form):
 
     def clean(self):
         """validate phone and its password are corresponding"""
-        phone = self.clean_phone()
-        password = self.clean_password()
+        phone = self.cleaned_data['phone']
+        password = self.clean_password['password']
 
         try:
-            requesting_user = AuthUser.objects.get(phone=phone)
+            requesting_user = UserManager.objects.get(phone=phone)
         except ObjectDoesNotExist:
             raise forms.ValidationError('Input correct phone number')
         if not requesting_user.check_password(password):
