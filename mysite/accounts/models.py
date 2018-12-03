@@ -67,6 +67,10 @@ class UserManager(AbstractUser):
     #     """
     #     return self.last_name + self.first_name
 
+    user_id = models.AutoField(primary_key=True, unique=True)
+
+    username = models.CharField(max_length=255, unique=True)
+
     first_name = models.CharField(verbose_name='first name', max_length=30)
 
     last_name = models.CharField(verbose_name='last name', max_length=30)
@@ -105,4 +109,4 @@ class UserManager(AbstractUser):
     # objects = AuthUserManager()
 
     def __str__(self):
-        return self.phone
+        return self.username

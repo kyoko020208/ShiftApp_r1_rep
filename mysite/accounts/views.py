@@ -24,9 +24,11 @@ class SignUpView(View):
 
         #save form info into user database
         user_info_save = form.save(commit=True)
+        user_info_save.set_password(form.cleaned_data['password'])
+        user_info_save.save()
 
-        #login; save the user data and update the database
-        auth_login(request, user_info_save)
+        # #login; save the user data and update the database
+        # auth_login(request, user_info_save)
 
         #redirect to shift index
         return redirect('accounts:login')

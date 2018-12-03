@@ -9,23 +9,24 @@ class SignUpForm(forms.ModelForm):
         #Use UserManager class from model.py
         model = UserManager
         #Prepare the same fields as being made in model.py
-        fields = ('first_name', 'last_name', 'phone', 'restaurant', 'password', )
+        fields = ('username', 'first_name', 'last_name', 'phone', 'restaurant', 'password', )
         #パスワードform作るときのおまじない
         widgets = {
             'password': forms.PasswordInput(attrs={'placeholder': '*Password'}),
         }
 
     #Create Password Confirmation form
-    confirm_password = forms.CharField(
+    password2 = forms.CharField(
         label='checking password',
         required=True,
         strip=False,
-        widget=forms.PasswordInput(attrs={'placeholder': '*Password'}),
+        widget=forms.PasswordInput(attrs={'placeholder': '*Confirm Password'}),
     )
 
     #Create Input form
     def __init__(self, *args, **kwargs):
         super(SignUpForm, self).__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs = {'placeholder': '*Username'}
         self.fields['first_name'].widget.attrs = {'placeholder': '*First name'}
         self.fields['first_name'].required = True
         self.fields['last_name'].widget.attrs = {'placeholder': '*Last name'}
@@ -35,38 +36,38 @@ class SignUpForm(forms.ModelForm):
         self.fields['restaurant'].widget.attrs = {'placeholder': '*Restaurant name'}
         self.fields['restaurant'].required = True
 
-    def clean_firstName(self):
-        firstName = self.clean_data['first_name']
-        return firstName
+    # def clean_firstName(self):
+    #     firstName = self.clean_data['first_name']
+    #     return firstName
+    #
+    # def clean_lastName(self):
+    #     lastName = self.clean_data['last_name']
+    #     return lastName
+    #
+    # def clean_restaurant(self):
+    #     restaurant = self.clean_data['restanrant']
+    #     return restaurant
 
-    def clean_lastName(self):
-        lastName = self.clean_data['last_name']
-        return lastName
-
-    def clean_restaurant(self):
-        restaurant = self.clean_data['restanrant']
-        return restaurant
-
-    def clean_phone(self):
+    def clean_username(self):
         """validate phone"""
-        phone = self.cleaned_data['phone']
+        username = self.cleaned_data['username']
 
         #if phone is less than 9 letters, show error message
-        if len(phone) < 9:
-            raise forms.ValidationError('Phone number must be more than 9 letters')
+        if len(username) < 3:
+            raise forms.ValidationError('username must be more than 3 letters')
         #if phoen is not numeric, show error message
-        if not phone.isnumeric():
-            raise forms.ValidationError('Phone number must be numbers')
-        return phone
+        if username.isnumeric():
+            raise forms.ValidationError('username must not be only numbers')
+        return username
 
-    def clean_password(self):
+    def clean(self):
         """validate password and confirm password"""
         super(SignUpForm, self).clean()
         password = self.cleaned_data['password']
-        confirm_password = self.cleaned_data['confirm_password']
+        password2 = self.cleaned_data['password2']
 
         #if password and confirm password dont match, show error message
-        if password != confirm_password:
+        if password != password2:
             raise forms.ValidationError("password and confirmed password don't match")
 
     def save(self, commit=True):
@@ -82,10 +83,10 @@ class SignUpForm(forms.ModelForm):
 
 
 class LoginForm(forms.Form):
-    phone = forms.CharField(
-        label='Phone Number',
+    username = forms.CharField(
+        label='Username Number',
         max_length=15,
-        widget=forms.TextInput(attrs={'placeholder': 'Phone Number',
+        widget=forms.TextInput(attrs={'placeholder': 'Username Number',
                                       'autofocus': True})
     )
     """
@@ -108,25 +109,25 @@ class LoginForm(forms.Form):
         password = self.cleaned_data['password']
         return password
 
-    def clean_phone(self):
-        """validate phone number"""
-        phone = self.cleaned_data['phone']
-        return phone
+    def clean_username(self):
+        """validate username number"""
+        username = self.cleaned_data['username']
+        return username
 
     def clean(self):
-        """validate phone and its password are corresponding"""
-        phone = self.cleaned_data['phone']
-        password = self.clean_password['password']
+        """validate username and its password are corresponding"""
+        username = self.cleaned_data['username']
+        password = self.cleaned_data['password']
 
         try:
-            requesting_user = UserManager.objects.get(phone=phone)
+            requesting_user = UserManager.objects.get(username=username)
         except ObjectDoesNotExist:
-            raise forms.ValidationError('Input correct phone number')
+            raise forms.ValidationError('Input correct username')
         if not requesting_user.check_password(password):
             raise forms.ValidationError('Input correct password')
         self.user_request_to_login = requesting_user
 
 
     def get_login_user(self):
-        """return user id which has corresponding phone and database id"""
+        """return user id which has corresponding username and database id"""
         return self.user_request_to_login
