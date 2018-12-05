@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts.apps.AccountsConfig',
+    'shifts'
 ]
 
 MIDDLEWARE = [
@@ -76,9 +77,9 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'database',
-        'USER': 'user',
-        'PASSWORD': 'pass',
+        'NAME': 'sample',
+        'USER': 'root',
+        'PASSWORD': 'metro181',
         'HOST': 'localhost',
         'PORT': '8889',
         'OPTIONS': {
