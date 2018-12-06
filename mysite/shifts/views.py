@@ -2,12 +2,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.generic import View
 import calendar
-from cleections import deque
+from collections import deque
 import datetime
-import .models import Schedule
+from shifts.models import Schedule
 from django.views.generic import ListView, FormView, DeleteView
 from django.contrib import messages
-
+from .forms import ShiftAddForm
+from django.urls import reverse_lazy
+from django.core.paginator import Paginator
 
 class BaseCalendarMixin:
     """Base class for all calendar"""
@@ -19,7 +21,7 @@ class BaseCalendarMixin:
         """Setup calendar
         create instance for calender.Calendar class
         """
-        self._calender = calender.Calender(self.first_weekday)
+        self._calender = calendar.Calender(self.first_weekday)
 
     def get_week_names(self):
         """changeable the first day for a week"""
@@ -48,7 +50,7 @@ class WeekCalendarMixin(BaseCalendarMixin):
         """retuns week calendar library"""
         self.setup()
         days = self.get_week_days()
-        first = day[0]
+        first = days[0]
         last = days[-1]
         calendar_data = {
             'now': datetime.date.today(),
@@ -84,34 +86,36 @@ class WeekWithScheduleMixin(WeekCalendarMixin):
         return calendar_data
 
 
+class HomeView(ListView):
+    def get(self, request, *args, **kwargs):
+        form = ShiftAddForm()
+        return render(request, 'shifts/index.html', {'form': form})
+
 
 class ShiftAddView(FormView):
-    form = ScheduleForm()
-    template_name = 'shifts/schedule_edit.html'
-    success_url = reverse_lasy('shifts:index')
-
-    def get(self,**kwargs):
-        #kwargs=dictionary
-        context = super().get(**kwargs)
-        context['week'] = self.get_week_calendar()
-        return context
-
-    def post(self, request, *args, **kwargs):
-        form = ScheduleForm(request.POST, user=request.user)
-        if not form.is_valid():
-            return render(request, 'shifts.index.html', {'form':form})
-        form.save(commit=True)
-        messages.success(request, "'%s' has been just added" % form.cleaned_data[shifts])
-        return redirect('shifts:index')
-
-class ShiftDeleteView(DeleteView):
-    model = Schedule
+    form = ShiftAddForm()
+    template_name = 'shifts/shiftsadd.html'
     success_url = reverse_lazy('shifts:index')
 
-    def get(self, request, *args, **kwargs):
-        return.post(request, *args, **kwargs)
 
+    def get(self):
+        #kwargs=dictionary
+        kwargs = super(ShiftAddView, self).get()
+        kwargs['user'] = self.request.user
+        return kwargs
 
+    def post(self, request, *args, **kwargs):
+        form = ShiftAddForm(request.POST, user=request.user)
+        if not form.is_valid():
+            return render(request, 'shifts/shiftsadd.html', {'form': form})
+        form.save(commit=True)
+        messages.success(request, "change has been saved")
+        return redirect('shifts:index')
 
-@login_required
-class Calendar(View):
+# class ShiftDeleteView(DeleteView):
+#     model = Schedule
+#     success_url = reverse_lazy('shifts:index')
+#
+#     def get(self, request, *args, **kwargs):
+#         return self.post(request, *args, **kwargs)
+

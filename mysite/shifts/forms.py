@@ -1,7 +1,7 @@
 from django import forms
 
 from shifts.models import Schedule
-from accouns.models import UserManager
+from accounts.models import UserManager
 
 class ShiftAddForm(forms.ModelForm):
     class Meta:
@@ -20,7 +20,7 @@ class ShiftAddForm(forms.ModelForm):
         shift = super(ShiftAddForm, self).save(commit=False)
         get_shift_id = list(Schedule.objects.filter(shift=shift).values('pk'))
         shift.shift_id = get_shift_id[0]['pk']
-        shif.iser = self.user
+        shift.user = self.user
         if commit:
             shift.save()
         return shift

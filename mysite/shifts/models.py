@@ -1,18 +1,18 @@
 from django.db import models
 import datetime
 from django.utils import timezone
-from accouns.models import UserManager
+from accounts.models import UserManager
 
 
 class Manager(models.Model):
-    manager = models.ForeignKey(UserManager, on_delete=models.CASCADE, related_name=Manager)
+    manager = models.ForeignKey(UserManager, on_delete=models.CASCADE)
 
 
 class Schedule(models.Model):
     start_time = models.TimeField('start time', default=datetime.time(7,0,0))
     end_time = models.TimeField('end time', default=datetime.time(7,0,0))
     date = models.DateField('date')
-    created_at = models.DateField('date modified', default=datatime.time(7,0,0))
+    created_at = models.DateField('date modified', default=timezone.now)
 
     def __str__(self):
         return self.date
