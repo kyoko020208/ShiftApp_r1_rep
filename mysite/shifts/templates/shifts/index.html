@@ -11,10 +11,7 @@
 <!--<a href = "{% url 'shifts:index' week.previous.year week.previous.month week.previous.day %}">Last Week</a>-->
 <!--{{ week.first | date:"Y/m/d" }} ~ {　week.last | date:"Y/m/d" }}-->
 <!--<a href = "{% url 'shifts:index' week.next.year week.next.month week.next.day %}">Next Week</a>-->
-{% if queryset %}
 
-    <form method="get">
-        {% csrf_token %}
         <table class="table table-bordered">
         <thead>
             <tr>
@@ -50,6 +47,4 @@
         </tr>
 </tbody>
 </table>
-</form>
-{% endif %}
 {% endblock %}
