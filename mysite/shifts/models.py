@@ -7,11 +7,16 @@ from accounts.models import UserManager
 class Manager(models.Model):
     manager = models.ForeignKey(UserManager, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.manager
+
 
 class Schedule(models.Model):
+    class Meta:
+        db_table = 'schedule'
     start_time = models.TimeField('start time', default=datetime.time(7,0,0))
     end_time = models.TimeField('end time', default=datetime.time(7,0,0))
-    date = models.DateField('date')
+    date = models.DateField('date', default=timezone.now)
     created_at = models.DateField('date modified', default=timezone.now)
 
     def __str__(self):

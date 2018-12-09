@@ -3,13 +3,16 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import View
 import calendar
 from collections import deque
-import datetime
 from shifts.models import Schedule
 from django.views.generic import ListView, FormView, DeleteView
 from django.contrib import messages
 from .forms import ShiftAddForm
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
+from datetime import datetime
+from django.views import generic
+import datetime
+
 
 class BaseCalendarMixin:
     """Base class for all calendar"""
@@ -19,9 +22,9 @@ class BaseCalendarMixin:
 
     def setup(self):
         """Setup calendar
-        create instance for calender.Calendar class
+        create instance for calendar.Calendar class
         """
-        self._calender = calendar.Calender(self.first_weekday)
+        self._calendar = calendar.Calendar(self.first_weekday)
 
     def get_week_names(self):
         """changeable the first day for a week"""
@@ -41,13 +44,13 @@ class WeekCalendarMixin(BaseCalendarMixin):
         else:
             date = datetime.date.today().replace(day=1)
         #pickup the week
-        for week in self.calendar.monthdatescalender(date.year, date.month):
+        for week in self._calendar.monthdatescalendar(date.year, date.month):
             #if date is founded, return the week
             if date in week:
                 return week
 
     def get_week_calendar(self):
-        """retuns week calendar library"""
+        """returns week calendar library"""
         self.setup()
         days = self.get_week_days()
         first = days[0]
@@ -70,14 +73,12 @@ class WeekWithScheduleMixin(WeekCalendarMixin):
     order_field = 'start_time'
 
     def get_week_schedules(self, days):
-
         for day in days:
             lookup = {self.date_field: day}
             queryset = self.objects.filter(**lookup)
             if self.order_field:
                 queryset = queryset.order_by(self.order_field)
             yield queryset
-
 
     def get_week_calendar(self):
         calendar_data = super().get_week_calendar()
@@ -86,21 +87,23 @@ class WeekWithScheduleMixin(WeekCalendarMixin):
         return calendar_data
 
 
-class HomeView(ListView):
-    def get(self, request, *args, **kwargs):
-        form = ShiftAddForm()
-        return render(request, 'shifts/index.html', {'form': form})
+class HomeView(WeekWithScheduleMixin, generic.TemplateView):
+    template_name = 'shifts/index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['week'] = self.get_week_calendar()
+        return context
 
 
 class ShiftAddView(FormView):
-    form = ShiftAddForm()
+    form_class = ShiftAddForm
     template_name = 'shifts/shiftsadd.html'
     success_url = reverse_lazy('shifts:index')
 
-
-    def get(self):
+    def get_form_kwargs(self):
         #kwargs=dictionary
-        kwargs = super(ShiftAddView, self).get()
+        kwargs = super(ShiftAddView, self).get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
 
