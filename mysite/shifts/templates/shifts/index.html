@@ -1,5 +1,5 @@
 {% block content %}
-<a href="/accounts/logout">Logout</a>
+<a href="{% url 'accounts:login' %}">Logout</a>
 <br>
 <br>
 <a href="{% url 'shifts:index' week.previous.year week.previous.month week.previous.day %}">Last Week</a>

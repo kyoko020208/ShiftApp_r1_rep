@@ -2,6 +2,23 @@ from django import forms
 from .models import UserManager
 from django.core.exceptions import ObjectDoesNotExist
 
+# class ManagerStatusForm(forms.ModelForm):
+#
+#     class Meta:
+#         model = UserManager
+#         fields = ('is_manager', )
+#         CHOICE = {
+#             ('0', 'Manager'),
+#             ('1', 'Employee'),
+#         }
+#         choice_field = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICE)
+#     def __init__(self, *args, **kwargs):
+#         super(ManagerStatusForm, self).__init__(*args, **kwargs)
+#
+#     def save(self, commit=False):
+#         managerStatus = super(ManagerStatusForm, self).save(commit=False)
+#         return managerStatus
+
 
 class SignUpForm(forms.ModelForm):
     """User Signup Form"""
@@ -10,9 +27,14 @@ class SignUpForm(forms.ModelForm):
         model = UserManager
         #Prepare the same fields as being made in model.py
         fields = ('username', 'first_name', 'last_name', 'phone', 'restaurant', 'password', )
+        # CHOICES = {
+        #     ('0', 'Manager'),
+        #     ('1', 'Employee'),
+        # }
         #パスワードform作るときのおまじない
         widgets = {
             'password': forms.PasswordInput(attrs={'placeholder': '*Password'}),
+            #'is_manager': forms.CharField(Choices=CHOICES)
         }
 
     #Create Password Confirmation form
@@ -22,6 +44,7 @@ class SignUpForm(forms.ModelForm):
         strip=False,
         widget=forms.PasswordInput(attrs={'placeholder': '*Confirm Password'}),
     )
+
 
     #Create Input form
     def __init__(self, *args, **kwargs):
@@ -35,6 +58,7 @@ class SignUpForm(forms.ModelForm):
         self.fields['phone'].required = True
         self.fields['restaurant'].widget.attrs = {'placeholder': '*Restaurant name'}
         self.fields['restaurant'].required = True
+
 
     # def clean_firstName(self):
     #     firstName = self.clean_data['first_name']

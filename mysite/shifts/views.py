@@ -32,8 +32,65 @@ class BaseCalendarMixin:
         week_names.rotate(-self.first_weekday)
         return week_names
 
+class MonthCalendarMixin(BaseCalendarMixin):
+    """Base class for monthly calendar"""
+    def get_previous_month(date):
+        """return previous month"""
+        if date.month == 1:
+            return date.replace(year=date.year-1, month=12, day=1)
+        else:
+            return date.replace(month=date.month-1, day=1)
+
+    def get_next_month(date):
+        """return next month"""
+        if date.month == 12:
+            return date.replace(year=date.year+1, month=1, day=1)
+        else:
+            return date.replace(month=date.month+1, day=1)
+
+    def get_month_days(self, date):
+        """return all days in the month"""
+        return self._calendar.monthdatescalendar(date.year, date.month)
+
+    def get_current_month(self):
+        """return current month"""
+        month = self.kwargs.get('month')
+        year = self.kwargs.get('year')
+        if month and year:
+            month = datetime.date(year=int(year), month=int(month), day=1)
+        else:
+            month = datetime.date.today().replace(day=1)
+        return month
+
+    def get_month_calendar(self):
+        """return monthly calendar dictionary"""
+        self.setup()
+        current_month = self.get_current_month()
+        calendar_data = {
+            'now': datetime.date.today(),
+            'days': self.get_month_days(current_month),
+            'current': current_month,
+            'previous': self.get_previous_month(current_month),
+            'next': self.get_next_month(current_month),
+            'week_names': self.get_week_names(),
+        }
+        return calendar_data
+
+class MonthCalendar(MonthCalendarMixin, generic.TemplateView):
+    """show view for monthly calendar"""
+    template_name = 'shifts/availability.html'
+
+    def get_content_data(self, **kwargs):
+        context = super().get_content_data(**kwargs)
+        context['month'] = self.get_month_calendar()
+        return context
+
+
+class AvailabilityHomeView(MonthCalendarMixin, ):
+
+
 class WeekCalendarMixin(BaseCalendarMixin):
-    """Base class for week calenar"""
+    """Base class for week calendar"""
     def get_week_days(self):
         #return all days in a week
         month = self.kwargs.get('month')
@@ -75,7 +132,7 @@ class WeekWithScheduleMixin(WeekCalendarMixin):
     def get_week_schedules(self, days):
         for day in days:
             lookup = {self.date_field: day}
-            queryset = self.objects.filter(**lookup)
+            queryset = Schedule.objects.filter(**lookup)
             if self.order_field:
                 queryset = queryset.order_by(self.order_field)
             yield queryset

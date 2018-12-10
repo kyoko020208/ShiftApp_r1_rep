@@ -22,11 +22,13 @@ class Schedule(models.Model):
     def __str__(self):
         return self.date
 
-# class TimeTable(models.Model):
-#     start = models.TimeField(default='08:00')
-#     end = models.TimeField(default='22:00')
-#
-#     def starftimetable(self):
-#         timef = '%H:%M'
-#         start,end = self.start,self.end
-#         return "%s ~ %s" % ( start.st)
+class Availability(models.Model):
+    class Meta:
+        db_table = 'availability'
+    available = models.IntegerField()
+    start_time = models.TimeField('start time', default=datetime.time(7, 0, 0))
+    end_time = models.TimeField('end time', default=datetime.time(7, 0, 0))
+    created_at = models.DateField('date modified', default=timezone.now)
+
+    def __str__(self):
+        return self.available

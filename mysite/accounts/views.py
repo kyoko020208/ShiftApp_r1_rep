@@ -5,6 +5,30 @@ from django.shortcuts import render, redirect, reverse
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+# class ManagerStatusView(View):
+#     def get(self, request, *args, **kwargs):
+#         """create method for get request"""
+#         return render(request, 'accounts/ManagerStatus.html')
+#     def post(self, request, *args, **kwargs):
+#         try:
+#             selected_choice =
+#
+#         return render(request, 'accounts/signup.html', is_manager)
+#
+#     def post(request):
+#         status = get_object_or_404(Question, pk=question_id)
+#         try:
+#             selected_choice = question.choice_set.get(pk=request.POST['choice'])
+#         except (KeyError, Choice.DoesNotExist):
+#             return render(request, 'polls/detail.html', {
+#                 'question': question,
+#                 'error_message': "you didn't select a choice.",
+#             })
+#         else:
+#             selected_choice.votes += 1
+#             selected_choice.save()
+#             return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+#
 
 class SignUpView(View):
     def get(self, request, *args, **kwargs):
@@ -14,7 +38,7 @@ class SignUpView(View):
         #return SignUp page with empty form
         return render(request, 'accounts/signup.html', {'form': form})
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, manager_status):
         """create method for post request"""
         #set request form as new form
         form = SignUpForm(request.POST)
@@ -31,7 +55,7 @@ class SignUpView(View):
         # auth_login(request, user_info_save)
 
         #redirect to shift index
-        return redirect('accounts:login')
+        return redirect('shifts:index')
 
 
 class LoginView(View):
@@ -50,7 +74,7 @@ class LoginView(View):
         login_user = form.get_login_user()
 
         auth_login(request, login_user)
-        return redirect(reverse('accounts:login'))
+        return redirect(reverse('shifts:index'))
 
 class LogoutView(LoginRequiredMixin, View):
     """create method for get request"""

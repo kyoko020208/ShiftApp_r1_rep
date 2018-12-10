@@ -13,7 +13,7 @@
             {{ form.as_p }}
         </div>
         <div>
-            <input type="button" value="Close" onClick="location.href='shifts/index.html">
+            <input type="button" value="Close" onClick="location.href='{% url 'shifts:index' %}'">
             <button type="submit">ADD <i class="fa fa-plus"></i></button>
         </div>
     </form>

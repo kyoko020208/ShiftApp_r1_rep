@@ -1,0 +1,38 @@
+{% block content %}
+
+<a href="{% url 'shifts:availability' month.previous.year month.previous.month month.previous.day %}">Last Month</a>
+{{ week.first | date:"Y/m/d" }} ~ {{ week.last | date:"Y/m/d" }}
+<a href="{% url 'shifts:availability' month.next.year month.next.month month.next.day %}">Next Month</a>
+
+<table>
+    <thead>
+        <tr>
+            {% for w in month.week_names %}
+                <th>
+                    {{ w }}
+                </th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for week in month.days %}
+            <tr>
+                {% for day in week %}
+                    {% if month.now == day %}
+                        <td class="table-success">
+                    {% else %}
+                        <td>
+                    {% endif %}
+                    {% if month.current.month != day.month %}
+                        {{ day | date:"m/d" }}
+                    {% else %}
+                        {{ day.day }}
+                    {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

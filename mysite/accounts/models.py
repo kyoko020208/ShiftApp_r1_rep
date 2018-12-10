@@ -50,15 +50,30 @@ from django.contrib.auth.models import AbstractUser
 #         user.is_superuser = True
 #         user.save(using=self._db)
 #         return user
+# PHONE_FIELD = 'phone'
+# USERNAME_FIELD = 'phone'
+# REQUIRED_FIELDS = ['first_name', 'last_name', 'restaurant']
+#
+# objects = AuthUserManager()
+
+# class ManagerStatus(models.Model):
+#     """
+#         Manage User Info
+#         """
+#
+#     class Meta:
+#         db_table = 'AuthUser'
+#
+#     #Check if he is a manager
+#     manager_status = models.IntegerField(default=1)
+#
+#     def __str__(self):
+#         return self.manager_status
 
 
 
 class UserManager(AbstractUser):
-    """
-    Manage User Info
-    """
-    class Meta:
-       db_table = 'AuthUser'
+
 
     # def get_full_name(self):
     #     """
@@ -66,7 +81,6 @@ class UserManager(AbstractUser):
     #     :return: first_name + last_name
     #     """
     #     return self.last_name + self.first_name
-
     user_id = models.AutoField(primary_key=True, unique=True)
 
     username = models.CharField(max_length=255, unique=True)
@@ -88,25 +102,16 @@ class UserManager(AbstractUser):
         verbose_name='staff status',
         default=False,
     )
-
-
-    #Check if he is a manager
-    is_manager = models.BooleanField(
-        verbose_name='manager status',
-        default=False,
-    )
-
     # Check if the account is active
     is_active = models.BooleanField(
         verbose_name='active',
         default=True,
     )
 
-    # PHONE_FIELD = 'phone'
-    # USERNAME_FIELD = 'phone'
-    # REQUIRED_FIELDS = ['first_name', 'last_name', 'restaurant']
-    #
-    # objects = AuthUserManager()
-
     def __str__(self):
         return self.username
+
+
+
+
+
