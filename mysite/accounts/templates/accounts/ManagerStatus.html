@@ -10,9 +10,14 @@
 
 
 {% block content %}
-<form action="{% url 'account:Manager' %}" method="post">
+<p>Select your Status</p>
+<form action="{% url 'accounts:Manager' %}" method="post">
     {% csrf_token %}
-    {% for choice in qiestion,
+    <select>
+        <option>Manager</option>
+        <option>Employee</option>
+    </select>
+    <input type="submit" value="SIGN IN">
 </form>
 
 {% endblock %}

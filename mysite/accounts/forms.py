@@ -2,39 +2,36 @@ from django import forms
 from .models import UserManager
 from django.core.exceptions import ObjectDoesNotExist
 
-# class ManagerStatusForm(forms.ModelForm):
-#
-#     class Meta:
-#         model = UserManager
-#         fields = ('is_manager', )
-#         CHOICE = {
-#             ('0', 'Manager'),
-#             ('1', 'Employee'),
-#         }
-#         choice_field = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICE)
-#     def __init__(self, *args, **kwargs):
-#         super(ManagerStatusForm, self).__init__(*args, **kwargs)
-#
-#     def save(self, commit=False):
-#         managerStatus = super(ManagerStatusForm, self).save(commit=False)
-#         return managerStatus
+
+class ManagerStatusForm(forms.ModelForm):
+    CHOICE = {
+        ('0', 'Manager'),
+        ('1', 'Employee'),
+    }
+    select = forms.ChoiceField(widget=forms.Select, choices=CHOICE)
+    class Meta:
+        model = UserManager
+        fields = {'is_manager', }
+
+    def clean_is_manager(self):
+        select = self.clean_data['select']
+        return select
 
 
 class SignUpForm(forms.ModelForm):
     """User Signup Form"""
+
+
     class Meta:
         #Use UserManager class from model.py
         model = UserManager
         #Prepare the same fields as being made in model.py
-        fields = ('username', 'first_name', 'last_name', 'phone', 'restaurant', 'password', )
-        # CHOICES = {
-        #     ('0', 'Manager'),
-        #     ('1', 'Employee'),
-        # }
+        fields = {'username', 'first_name', 'last_name', 'phone', 'restaurant', 'password', }
+
         #パスワードform作るときのおまじない
         widgets = {
             'password': forms.PasswordInput(attrs={'placeholder': '*Password'}),
-            #'is_manager': forms.CharField(Choices=CHOICES)
+
         }
 
     #Create Password Confirmation form
@@ -59,11 +56,6 @@ class SignUpForm(forms.ModelForm):
         self.fields['restaurant'].widget.attrs = {'placeholder': '*Restaurant name'}
         self.fields['restaurant'].required = True
 
-
-    # def clean_firstName(self):
-    #     firstName = self.clean_data['first_name']
-    #     return firstName
-    #
     # def clean_lastName(self):
     #     lastName = self.clean_data['last_name']
     #     return lastName

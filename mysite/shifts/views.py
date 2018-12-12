@@ -6,7 +6,7 @@ from collections import deque
 from shifts.models import Schedule
 from django.views.generic import ListView, FormView, DeleteView
 from django.contrib import messages
-from .forms import ShiftAddForm
+from .forms import ShiftAddForm, AvailabilityAddForm
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from datetime import datetime
@@ -85,8 +85,6 @@ class MonthCalendar(MonthCalendarMixin, generic.TemplateView):
         context['month'] = self.get_month_calendar()
         return context
 
-
-class AvailabilityHomeView(MonthCalendarMixin, ):
 
 
 class WeekCalendarMixin(BaseCalendarMixin):
@@ -179,3 +177,33 @@ class ShiftAddView(FormView):
 #     def get(self, request, *args, **kwargs):
 #         return self.post(request, *args, **kwargs)
 
+
+class AvailabilityHomeView(MonthCalendarMixin, WeekCalendarMixin, generic.TemplateView):
+    template_name = 'shifts/availability.html'
+
+    def get_week_context_data(self, **kwargs):
+        week_context = super().get_week_context_data(**kwargs)
+        week_context['week'] = self.get_week_calendar()
+        return week_context
+
+    def get_month_context_data(self, **kwargs):
+        month_context = super().get_month_context_data(**kwargs)
+        month_context['month'] = self.get_month_calendar()
+        return month_context
+
+class AvailabilityAddView(FormView):
+    form_class = AvailabilityAddForm
+    template_name = 'shifts/availabilityadd.html'
+    success_url = reverse_lazy('shifts:availability')
+
+    def get_form_kwargs(self):
+        kwargs = super(AvailabilityAddView, self).get_form_kwargs
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def post(self, request, *args, **kwargs):
+        form = AvailabilityAddForm(request.POST, user=request.user)
+        if not form.is_invalid():
+            return render(request, 'shifts:availabilityadd.html', {'form': form})
+        form.save(commit=True)
+        return redirect('shifts:availability')

@@ -56,23 +56,15 @@ from django.contrib.auth.models import AbstractUser
 #
 # objects = AuthUserManager()
 
-# class ManagerStatus(models.Model):
-#     """
-#         Manage User Info
-#         """
-#
-#     class Meta:
-#         db_table = 'AuthUser'
-#
-#     #Check if he is a manager
-#     manager_status = models.IntegerField(default=1)
-#
-#     def __str__(self):
-#         return self.manager_status
-
 
 
 class UserManager(AbstractUser):
+    """
+        Manage User Info
+        """
+    #
+    # class Meta:
+    #     db_table = 'AuthUser'
 
 
     # def get_full_name(self):
@@ -102,6 +94,13 @@ class UserManager(AbstractUser):
         verbose_name='staff status',
         default=False,
     )
+
+    is_manager = models.CharField(
+        verbose_name='staff status',
+        max_length=1000,
+    )
+
+
     # Check if the account is active
     is_active = models.BooleanField(
         verbose_name='active',

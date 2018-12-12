@@ -1,34 +1,26 @@
 from __future__ import unicode_literals
 from django.views.generic import View
-from .forms import SignUpForm, LoginForm
+from .forms import ManagerStatusForm, SignUpForm, LoginForm
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-# class ManagerStatusView(View):
-#     def get(self, request, *args, **kwargs):
-#         """create method for get request"""
-#         return render(request, 'accounts/ManagerStatus.html')
-#     def post(self, request, *args, **kwargs):
-#         try:
-#             selected_choice =
-#
-#         return render(request, 'accounts/signup.html', is_manager)
-#
-#     def post(request):
-#         status = get_object_or_404(Question, pk=question_id)
-#         try:
-#             selected_choice = question.choice_set.get(pk=request.POST['choice'])
-#         except (KeyError, Choice.DoesNotExist):
-#             return render(request, 'polls/detail.html', {
-#                 'question': question,
-#                 'error_message': "you didn't select a choice.",
-#             })
-#         else:
-#             selected_choice.votes += 1
-#             selected_choice.save()
-#             return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
-#
+class ManagerStatusView(View):
+    def get(self, request, *args, **kwargs):
+        """create method for get request"""
+        form = ManagerStatusForm()
+        return render(request, 'accounts/ManagerStatus.html')
+    def post(self, request, *args, **kwargs):
+        form = ManagerStatusForm()
+        if form.is_valid():
+            manager_status = form.cleaned_data.get('select')
+            context = {
+                'form': form,
+            }
+            return redirect('accounts:signup', context)
+        else:
+            return render(request, 'accounts/ManagerStatus.html')
+
 
 class SignUpView(View):
     def get(self, request, *args, **kwargs):

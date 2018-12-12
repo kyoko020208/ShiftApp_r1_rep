@@ -1,15 +1,6 @@
 from django.db import models
 import datetime
 from django.utils import timezone
-from accounts.models import UserManager
-
-
-class Manager(models.Model):
-    manager = models.ForeignKey(UserManager, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.manager
-
 
 class Schedule(models.Model):
     class Meta:

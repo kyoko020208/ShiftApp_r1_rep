@@ -8,6 +8,7 @@ urlpatterns=[
     path('index/', views.HomeView.as_view(), name='index'),
     path('index/<int:year>/<int:month>/<int:day>/', views.HomeView.as_view(), name='index'),
     path('index/shiftsadd/', views.ShiftAddView.as_view(), name='shiftsadd'),
-    path('availability/', views.Availavility.as_view(), name='availability'),
-    path('availability/<int:year>/<int:month>/<int:day>/', views.Availability.as_view(), name='availability')
+    path('availability/', views.AvailabilityHomeView.as_view(), name='availability'),
+    path('availability/<int:year>/<int:month>/<int:day>/', views.AvailabilityHomeView.as_view(), name='availability'),
+    path('availability/add', views.AvailabilityAddView.as_view(), name='availabilityadd')
 ]
