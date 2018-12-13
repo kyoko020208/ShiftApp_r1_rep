@@ -4,22 +4,18 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 class ManagerStatusForm(forms.Form):
-
     CHOICE = {
-        ('1', 'Manager'),
-        ('0', 'Employee'),
+        ('0', 'Manager'),
+        ('1', 'Employee'),
     }
-
     select = forms.ChoiceField(widget=forms.Select, choices=CHOICE)
 
     class Meta:
         fields = {'is_manager', }
 
-    def clean_is_manager(self, *args, **kwargs):
-        select = self.cleaned_data['select']
-        is_manager = self.cleaned_data['is_manager']
-        is_manager = select
-        return is_manager
+    def clean_is_manager(self):
+        select = self.clean_data['select']
+        return select
 
 
 class SignUpForm(forms.ModelForm):

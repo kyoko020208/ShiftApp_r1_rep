@@ -8,8 +8,6 @@ from django.urls import reverse_lazy
 
 class ManagerStatusView(View):
     def get_context_data(self, request, **kwargs):
-        form = ManagerStatusForm()
-        # context = super().get_form_info(**kwargs)
         return render(request, 'accounts/ManagerStatus.html')
 
     def post(self, request, *args, **kwargs):
