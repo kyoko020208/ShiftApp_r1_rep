@@ -3,19 +3,26 @@ from .models import UserManager
 from django.core.exceptions import ObjectDoesNotExist
 
 
-class ManagerStatusForm(forms.ModelForm):
+class ManagerStatusForm(forms.Form):
+
     CHOICE = {
-        ('0', 'Manager'),
-        ('1', 'Employee'),
+        ('1', 'Manager'),
+        ('0', 'Employee'),
     }
+
     select = forms.ChoiceField(widget=forms.Select, choices=CHOICE)
+
     class Meta:
-        model = UserManager
         fields = {'is_manager', }
 
-    def clean_is_manager(self):
-        select = self.clean_data['select']
-        return select
+    def __init__(self):
+        self.fields['is_manager'].required = True
+
+    def clean_is_manager(self, *args, **kwargs):
+        select = self.cleaned_data['select']
+        is_manager = self.cleaned_data['is_manager']
+        is_manager = select
+        return is_manager
 
 
 class SignUpForm(forms.ModelForm):

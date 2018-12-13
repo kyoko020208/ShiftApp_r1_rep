@@ -4,22 +4,20 @@ from .forms import ManagerStatusForm, SignUpForm, LoginForm
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
 
 class ManagerStatusView(View):
-    def get(self, request, *args, **kwargs):
-        """create method for get request"""
+    def get_context_data(self, request, **kwargs):
         form = ManagerStatusForm()
+        # context = super().get_form_info(**kwargs)
         return render(request, 'accounts/ManagerStatus.html')
+
     def post(self, request, *args, **kwargs):
         form = ManagerStatusForm()
-        if form.is_valid():
-            manager_status = form.cleaned_data.get('select')
-            context = {
-                'form': form,
-            }
-            return redirect('accounts:signup', context)
-        else:
-            return render(request, 'accounts/ManagerStatus.html')
+        context = super().post(**kwargs)
+        select = form.cleaned_data['select']
+        context['is_manager'] = select
+        return redirect('accounts:signup', context)
 
 
 class SignUpView(View):
@@ -30,7 +28,7 @@ class SignUpView(View):
         #return SignUp page with empty form
         return render(request, 'accounts/signup.html', {'form': form})
 
-    def post(self, request, manager_status):
+    def post(self, request):
         """create method for post request"""
         #set request form as new form
         form = SignUpForm(request.POST)

@@ -42,8 +42,7 @@ class AvailabilityAddForm(forms.ModelForm):
         self.field['start_time'].auto_focus = True
         self.fields['end_time'].widget.attrs = {'placeholder': 'End Time'}
         self.fields['end_time'].auto_focus = True
-        self.fields['available'].widget = forms.RadioSelect
-        self.fields['available'].choices = CH
+        self.fields['available'] = self.get.available_info
 
     def clean(self):
         start_time = self.cleaned_data['start_time']
