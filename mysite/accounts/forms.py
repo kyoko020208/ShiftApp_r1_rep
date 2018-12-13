@@ -15,9 +15,6 @@ class ManagerStatusForm(forms.Form):
     class Meta:
         fields = {'is_manager', }
 
-    def __init__(self):
-        self.fields['is_manager'].required = True
-
     def clean_is_manager(self, *args, **kwargs):
         select = self.cleaned_data['select']
         is_manager = self.cleaned_data['is_manager']

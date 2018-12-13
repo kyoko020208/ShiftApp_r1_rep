@@ -14,9 +14,10 @@ class ManagerStatusView(View):
 
     def post(self, request, *args, **kwargs):
         form = ManagerStatusForm()
-        context = super().post(**kwargs)
-        select = form.cleaned_data['select']
-        context['is_manager'] = select
+        is_manager = form.cleaned_data['is_manager']
+        context = {
+            'is_manager': is_manager,
+        }
         return redirect('accounts:signup', context)
 
 
